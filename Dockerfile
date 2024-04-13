@@ -14,44 +14,29 @@ ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 
 RUN \
   echo "**** install runtime packages ****" && \
-  apk add --no-cache \
-    php83-dom \
-    php83-intl \
-    php83-pdo_pgsql \
-    php83-pdo_sqlite \
-    php83-pdo_mysql \
-    php83-opcache \
-    php83-tokenizer && \
+  apk add --no-cache php83-dom php83-intl php83-pdo_pgsql php83-pdo_sqlite php83-pdo_mysql php83-opcache php83-tokenizer && \
   echo "**** configure nginx ****" && \
-  echo 'fastcgi_param  PHP_AUTH_USER      $remote_user; # Heimdall user authorization' >> \
-    /etc/nginx/fastcgi_params && \
-  echo 'fastcgi_param  PHP_AUTH_PW        $http_authorization; # Heimdall user authorization' >> \
-    /etc/nginx/fastcgi_params && \
+  echo 'fastcgi_param  PHP_AUTH_USER      $remote_user; # Heimdall user authorization' >> /etc/nginx/fastcgi_params && \
+  echo 'fastcgi_param  PHP_AUTH_PW        $http_authorization; # Heimdall user authorization' >> /etc/nginx/fastcgi_params && \
   echo "**** configure php opcache ****" && \
-  echo 'opcache.validate_timestamps=0' >> \
-    /etc/php83/conf.d/00_opcache.ini && \
+  echo 'opcache.validate_timestamps=0' >> /etc/php83/conf.d/00_opcache.ini && \
   echo "**** install heimdall ****" && \
-  mkdir -p \
-    /heimdall && \
+  mkdir -p /heimdall && \
   if [ -z ${HEIMDALL_RELEASE+x} ]; then \
     HEIMDALL_RELEASE=$(curl -sX GET "https://api.github.com/repos/linuxserver/Heimdall/releases/latest" \
     | awk '/tag_name/{print $4;exit}' FS='[""]'); \
   fi && \
-  curl -o \
-    /tmp/heimdall.tar.gz -L \
-    "https://github.com/linuxserver/Heimdall/archive/${HEIMDALL_RELEASE}.tar.gz" && \
-  mkdir -p \
-    /app/www-tmp && \
-  tar xf \
-    /tmp/heimdall.tar.gz -C \
-    /app/www-tmp --strip-components=1 && \
+  curl -o /tmp/heimdall.tar.gz -L "https://github.com/linuxserver/Heimdall/archive/${HEIMDALL_RELEASE}.tar.gz" && \
+  mkdir -p /app/www-tmp && \
+  tar xf /tmp/heimdall.tar.gz -C /app/www-tmp --strip-components=1 && \
   echo "**** cleanup ****" && \
-  rm -rf \
-    /tmp/*
+  rm -rf /tmp/* && \
+  mkdir -p /opt/plugin-manager/
 
 # add local files
 COPY root/ /
+COPY ./cohesive/pm_config.json /opt/plugin-manager/config.json
 
 # ports and volumes
-EXPOSE 80 443
-VOLUME /config
+#EXPOSE 80 443
+RUN mkdir -p /config

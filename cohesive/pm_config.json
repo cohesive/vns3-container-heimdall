@@ -1,0 +1,9 @@
+{
+  "configuration_files": [
+    {
+      "name": "Homer Config",
+      "path": "/www/assets/config.yml",
+      "description": "Homer configuration file"
+    }
+  ]
+}
