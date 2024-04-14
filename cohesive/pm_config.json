@@ -1,4 +1,14 @@
 {
+  "log_files": [
+    {
+      "path": "/config/log/nginx/access.log",
+      "description": "Access Log"
+    },
+    {
+      "path": "/config/log/nginx/error.log",
+      "description": "Error Log"
+    }
+  ],
   "configuration_files": [
     {
       "name": "Homer Config",
